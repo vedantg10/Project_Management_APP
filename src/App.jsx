@@ -2,6 +2,7 @@ import NewProject from "./Components/NewProject";
 import NoProjectsSelected from "./Components/NoProjectsSelected.jsx";
 import ProjectSidebar from "./Components/ProjectSidebar.jsx";
 import { useState } from "react";
+import SelectedProjects from "./Components/SelectedProjects.jsx";
 
 function App() {
   const [projectState, setProjectState] = useState({
@@ -14,6 +15,23 @@ function App() {
       return {
         ...prevState,
         selectedProjectId: null,
+      };
+    });
+  }
+
+  function handleSelectProject(id) {
+    setProjectState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: id,
+      };
+    });
+  }
+  function handleCancelAddProject() {
+    setProjectState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: undefined,
       };
     });
   }
@@ -32,9 +50,31 @@ function App() {
       };
     });
   }
-  let content;
+
+  function handleDeleteProject() {
+    setProjectState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: undefined,
+        projects: prevState.projects.filter(
+          (project) => project.id !== prevState.selectedProjectId
+        ),
+      };
+    });
+  }
+  const selectedProject = projectState.projects.find(
+    (project) => project.id === projectState.selectedProjectId
+  );
+  let content = (
+    <SelectedProjects
+      project={selectedProject}
+      onDelete={handleDeleteProject}
+    />
+  );
   if (projectState.selectedProjectId === null) {
-    content = <NewProject onAdd={handleAddProject} />;
+    content = (
+      <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject} />
+    );
   } else if (projectState.selectedProjectId === undefined) {
     content = (
       <NoProjectsSelected
@@ -45,10 +85,10 @@ function App() {
   return (
     <main className="h-screen my-8 flex gap-8">
       <ProjectSidebar
+        onSelectProject={handleSelectProject}
         onStartAddProject={handleStartProject}
         projects={projectState.projects}
       ></ProjectSidebar>
-      {/* <NewProject></NewProject> */}
       {content}
     </main>
   );
