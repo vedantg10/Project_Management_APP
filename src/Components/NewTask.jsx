@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 
-const NewTask = () => {
+const NewTask = ({ onAdd }) => {
   const [enteredTask, setEnteredTask] = useState("");
   function handleChange(event) {
     setEnteredTask(event.target.value);
+  }
+
+  function handleClick() {
+    if (enteredTask.trim() === "") {
+      return;
+    }
+    onAdd(enteredTask);
+    setEnteredTask("");
   }
   return (
     <div className="flex items-center gap-4">
@@ -13,7 +21,10 @@ const NewTask = () => {
         onChange={handleChange}
         value={enteredTask}
       />
-      <button className="text-stone-700 hover:text-stone-900">
+      <button
+        className="text-stone-700 hover:text-stone-900"
+        onClick={handleClick}
+      >
         {" "}
         Add Task{" "}
       </button>
